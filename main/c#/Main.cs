@@ -1,5 +1,4 @@
-
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -8,7 +7,6 @@ using Newtonsoft.Json;
 
 namespace login_system
 {
-
     public class main
     {
         public static string filename = "info.json";
@@ -19,12 +17,14 @@ namespace login_system
             {
                 login();
             }
-            catch (System.IO.FileNotFoundException)
-            //the user didn't register before.
+            catch (Exception ex)
             {
-                
-                register();
+                if (ex is System.IO.FileNotFoundException || ex is System.NullReferenceException)
+                {
+                  register();  
+                }
             }
+
             Console.ReadLine();
         }
 
@@ -36,7 +36,7 @@ namespace login_system
         }
 
         public static Dictionary<string, string> ReadJson()
-        //Returns a dictionary of the contents of a json file. 
+        //Returns json file contents as dictionary 
         {
             string file_string = File.ReadAllText(filename);
             var file_contents = JsonConvert.DeserializeObject<Dictionary<string, string>>(file_string);
@@ -55,7 +55,7 @@ namespace login_system
         public static void register()
         {
             Tuple<string, string> credintals = get_input();
-            var contents = new Dictionary<string, string>();
+            Dictionary<string, string> contents = new Dictionary<string, string>();
             contents.Add("username",credintals.Item1);
             contents.Add("password",credintals.Item2);
             WriteJson(contents);
@@ -64,10 +64,10 @@ namespace login_system
 
         public static void login()
         {
-            var dict = ReadJson();
-            var user_name = dict["username"];
-            var user_password = dict["password"];
-            var entered_credintals = get_input();
+            Dictionary<string, string> dict = ReadJson();
+            string user_name = dict["username"];
+            string user_password = dict["password"];
+            Tuple<string, string> entered_credintals = get_input();
 
             if (user_name == entered_credintals.Item1 && user_password == entered_credintals.Item2)
             {
